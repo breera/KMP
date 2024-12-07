@@ -29,33 +29,24 @@ import composemultiplaformsample.composeapp.generated.resources.fr
 import composemultiplaformsample.composeapp.generated.resources.id
 import composemultiplaformsample.composeapp.generated.resources.jp
 import composemultiplaformsample.composeapp.generated.resources.mx
-import io.ktor.client.engine.HttpClientEngine
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.breera.project.book.data.network.KtorRemoteBookDataSource
-import org.breera.project.book.data.network.repository.DefaultBookRepository
 import org.breera.project.book.presentation.book_list.BookListRoot
 import org.breera.project.book.presentation.book_list.BookListViewModel
-import org.breera.project.core.data.HttpClientFactory
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
-fun App(engine: HttpClientEngine) {
-
+fun App() {
+    val viewModel = koinViewModel<BookListViewModel>()
     BookListRoot(
-        viewModel = remember {
-            BookListViewModel(
-                DefaultBookRepository(
-                    KtorRemoteBookDataSource(HttpClientFactory.create(engine))
-                )
-            )
-        },
+        viewModel = viewModel,
         onBookClick = {
 
         }

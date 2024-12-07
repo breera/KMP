@@ -1,7 +1,11 @@
 package org.breera.project
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
-import io.ktor.client.engine.darwin.Darwin
+import org.breera.project.di.initKoin
 
-fun MainViewController() = ComposeUIViewController { App(remember { Darwin.create() }) }
+fun MainViewController() = ComposeUIViewController(
+    // called only once
+    configure = { initKoin() }
+) {
+    App()
+}
