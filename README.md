@@ -31,4 +31,7 @@ The following steps were taking in Book landing screen (Load books and search bo
 - Created repository and return data while utilizing mappers (mapper should also in data ad domain will have no reference to data).
 - Now again created its abstraction in domain package and provide that to viewmodel as VM will refer to domain not data
 - For sake of running app , at this point provided hard repository to VM
-  
+
+********** Second Commit Steps **********
+Add Koin initialization to Android and iOS MainViewController.
+
