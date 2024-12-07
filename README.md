@@ -10,5 +10,21 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 * `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
   you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
 
+**********Initial Commit Steps**********
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+The following steps were taking in Book landing screen (Load books and search books)
+**Domain:**
+- Started with domain model in Book package
+- created utilities like generic error and some extensions in core domain package
+**Presentation**
+- The played with presentation. In order to achieve MVI first created State and ActionInterface
+- Created VM , added mutable states and onActions and also observe the Actions as we know what to do with them
+- Created UI Components and Book Screen
+**Data**
+- Created DTOs
+- Created Http Client factory and extension in Core Data package
+- Created Data Source in book data package and created its abstraction (Interface). We were still not able to use this abstraction in domain/ presentation as it was returning the DTO of data package, violation of clean
+- Created repository and return data while utilizing mappers (mapper should also in data ad domain will have no reference to data).
+- Now again created its abstraction in domain package and provide that to viewmodel as VM will refer to domain not data
+- For sake of running app , at this point provided hard repository to VM
+  
