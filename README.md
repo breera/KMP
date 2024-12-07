@@ -13,13 +13,17 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 **********Initial Commit Steps**********
 
 The following steps were taking in Book landing screen (Load books and search books)
+
 **Domain:**
+
 - Started with domain model in Book package
 - created utilities like generic error and some extensions in core domain package
+  
 **Presentation**
 - The played with presentation. In order to achieve MVI first created State and ActionInterface
 - Created VM , added mutable states and onActions and also observe the Actions as we know what to do with them
 - Created UI Components and Book Screen
+  
 **Data**
 - Created DTOs
 - Created Http Client factory and extension in Core Data package
