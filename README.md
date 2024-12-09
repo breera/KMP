@@ -32,6 +32,9 @@ The following steps were taking in Book landing screen (Load books and search bo
 - Now again created its abstraction in domain package and provide that to viewmodel as VM will refer to domain not data
 - For sake of running app , at this point provided hard repository to VM
 
-********** Second Commit Steps **********
+**********Second Commit Steps**********
 Add Koin initialization to Android and iOS MainViewController.
 
+**********Third Commit Steps**********
+Created Navigation components and define route interface
+Pass data from previous screen and Show text in next screen

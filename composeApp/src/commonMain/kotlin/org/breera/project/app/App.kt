@@ -1,8 +1,10 @@
-package org.breera.project
+package org.breera.project.app
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +24,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import composemultiplaformsample.composeapp.generated.resources.Res
 import composemultiplaformsample.composeapp.generated.resources.compose_multiplatform
 import composemultiplaformsample.composeapp.generated.resources.eg
@@ -34,6 +41,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.breera.project.Greeting
 import org.breera.project.book.presentation.book_list.BookListRoot
 import org.breera.project.book.presentation.book_list.BookListViewModel
 import org.jetbrains.compose.resources.DrawableResource
@@ -44,13 +52,30 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 @Preview
 fun App() {
-    val viewModel = koinViewModel<BookListViewModel>()
-    BookListRoot(
-        viewModel = viewModel,
-        onBookClick = {
-
+    MaterialTheme {
+        val navHostController = rememberNavController()
+        NavHost(navController = navHostController, startDestination = Route.BookGraph) {
+            navigation<Route.BookGraph>(startDestination = Route.BookList) {
+                composable<Route.BookList> {
+                    val viewModel = koinViewModel<BookListViewModel>()
+                    BookListRoot(
+                        viewModel = viewModel,
+                        onBookClick = {
+                            navHostController.navigate(Route.BookDetails(it.id))
+                        }
+                    )
+                }
+                composable<Route.BookDetails> { entry ->
+                    val args = entry.toRoute<Route.BookDetails>()
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text("the selected id is ${args.bookId}")
+                    }
+                }
+            }
         }
-    )
+    }
 }
 
 @Composable
