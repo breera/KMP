@@ -14,6 +14,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,11 +25,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import composemultiplaformsample.composeapp.generated.resources.Res
 import composemultiplaformsample.composeapp.generated.resources.compose_multiplatform
 import composemultiplaformsample.composeapp.generated.resources.eg
@@ -53,24 +57,34 @@ import org.koin.compose.viewmodel.koinViewModel
 @Preview
 fun App() {
     MaterialTheme {
-        val navHostController = rememberNavController()
-        NavHost(navController = navHostController, startDestination = Route.BookGraph) {
+        val navController = rememberNavController()
+        NavHost(navController = navController, startDestination = Route.BookGraph) {
             navigation<Route.BookGraph>(startDestination = Route.BookList) {
                 composable<Route.BookList> {
                     val viewModel = koinViewModel<BookListViewModel>()
+                    val shareViewModel = it.sharedKoinViewModel<ShareViewModel>(navController)
+                    val selectedBookViewModel =
+                        it.sharedKoinViewModel<ShareViewModel>(navController)
+
+                    LaunchedEffect(true) {
+                        selectedBookViewModel.onSelectBook(null)
+                    }
                     BookListRoot(
                         viewModel = viewModel,
-                        onBookClick = {
-                            navHostController.navigate(Route.BookDetails(it.id))
+                        onBookClick = { book ->
+                            shareViewModel.onSelectBook(book)
+                            navController.navigate(Route.BookDetails(it.id))
                         }
                     )
                 }
                 composable<Route.BookDetails> { entry ->
-                    val args = entry.toRoute<Route.BookDetails>()
+                    val selectedBookViewModel =
+                        entry.sharedKoinViewModel<ShareViewModel>(navController)
+                    val selectedBook by selectedBookViewModel.selectedBook.collectAsStateWithLifecycle()
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Text("the selected id is ${args.bookId}")
+                        Text("the selected id is $selectedBook")
                     }
                 }
             }
@@ -78,6 +92,20 @@ fun App() {
     }
 }
 
+@Composable
+private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
+    navController: NavController
+): T {
+    val navGraphRoute = destination.parent?.route ?: return koinViewModel<T>()
+    val parentEntry = remember(this) { navController.getBackStackEntry(navGraphRoute) }
+    return koinViewModel(viewModelStoreOwner = parentEntry)
+}
+
+/**
+ * =================================================================
+ * App2 Below were the codes that were for practice from jetBrain
+ *
+ */
 @Composable
 @Preview
 fun App2() {

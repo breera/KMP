@@ -1,5 +1,6 @@
 package org.breera.project.di
 
+import org.breera.project.app.ShareViewModel
 import org.breera.project.book.data.network.KtorRemoteBookDataSource
 import org.breera.project.book.data.network.RemoteBookDataSource
 import org.breera.project.book.data.network.repository.DefaultBookRepository
@@ -19,4 +20,5 @@ val sharedModule = module {
     singleOf(::KtorRemoteBookDataSource).bind<RemoteBookDataSource>()
     singleOf(::DefaultBookRepository).bind<BookRepository>()
     viewModelOf(::BookListViewModel)
+    viewModelOf(::ShareViewModel)
 }
