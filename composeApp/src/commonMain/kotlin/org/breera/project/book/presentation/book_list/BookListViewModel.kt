@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.breera.project.book.data.network.repository.DefaultBookRepository
+import org.breera.project.book.data.repository.DefaultBookRepository
 import org.breera.project.book.domain.Book
 import org.breera.project.book.presentation.BookListAction
 import org.breera.project.book.presentation.BookListState

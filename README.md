@@ -33,15 +33,21 @@ The following steps were taking in Book landing screen (Load books and search bo
 - For sake of running app , at this point provided hard repository to VM
 
 **********Second Commit Steps**********
+
 Add Koin initialization to Android and iOS MainViewController.
 
 **********Third Commit Steps**********
+
 Created Navigation components and define route interface
 Pass data from previous screen and Show text in next screen
 
 **********Forth Commit Steps**********
+
 Add ShareViewModel to Modules and implement onSelectBook in ShareViewModel.
 They key point is here sometimes passing nav args, local db are much better option than this shared 
 ViewModel, Here to paas lagge model as Nav graph is not good as large data may cause crash in navArgument. So we are not going to create a GodFather Viewmodel with all logic in it.
 SharedViewmodel will come only with data that is required to shared e.g. state
 
+**********Fifth Commit Steps**********
+Create Detail screen , following same approach of creating state, action , VM, screen etc. 
+Hit API call, the only new thing is Serializable which was used to handle responses of same key.

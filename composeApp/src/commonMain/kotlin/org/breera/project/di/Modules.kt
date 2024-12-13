@@ -3,8 +3,9 @@ package org.breera.project.di
 import org.breera.project.app.ShareViewModel
 import org.breera.project.book.data.network.KtorRemoteBookDataSource
 import org.breera.project.book.data.network.RemoteBookDataSource
-import org.breera.project.book.data.network.repository.DefaultBookRepository
+import org.breera.project.book.data.repository.DefaultBookRepository
 import org.breera.project.book.domain.BookRepository
+import org.breera.project.book.presentation.book_detail.components.BookDetailViewModel
 import org.breera.project.book.presentation.book_list.BookListViewModel
 import org.breera.project.core.data.HttpClientFactory
 import org.koin.core.module.Module
@@ -21,4 +22,5 @@ val sharedModule = module {
     singleOf(::DefaultBookRepository).bind<BookRepository>()
     viewModelOf(::BookListViewModel)
     viewModelOf(::ShareViewModel)
+    viewModelOf(::BookDetailViewModel)
 }

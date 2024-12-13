@@ -1,4 +1,4 @@
-package org.breera.project.book.data.network.repository
+package org.breera.project.book.data.repository
 
 import org.breera.project.book.data.network.RemoteBookDataSource
 import org.breera.project.book.data.network.mapper.toBook
@@ -21,5 +21,13 @@ class DefaultBookRepository(private val remoteBookDataSource: RemoteBookDataSour
                     it.toBook()
                 }
             }
+    }
+
+    override suspend fun fetchDescription(
+        bookId: String
+    ): Result<String?, DataError.Remote> {
+        return remoteBookDataSource
+            .fetchDescription(bookId)
+            .map { it.description }
     }
 }

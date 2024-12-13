@@ -2,9 +2,7 @@ package org.breera.project.app
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,6 +44,9 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.breera.project.Greeting
+import org.breera.project.book.presentation.book_detail.BookDetailAction
+import org.breera.project.book.presentation.book_detail.BookDetailScreenRoot
+import org.breera.project.book.presentation.book_detail.components.BookDetailViewModel
 import org.breera.project.book.presentation.book_list.BookListRoot
 import org.breera.project.book.presentation.book_list.BookListViewModel
 import org.jetbrains.compose.resources.DrawableResource
@@ -73,19 +74,25 @@ fun App() {
                         viewModel = viewModel,
                         onBookClick = { book ->
                             shareViewModel.onSelectBook(book)
-                            navController.navigate(Route.BookDetails(it.id))
+                            navController.navigate(Route.BookDetails(book.id))
                         }
                     )
                 }
                 composable<Route.BookDetails> { entry ->
+                    val viewModel = koinViewModel<BookDetailViewModel>()
                     val selectedBookViewModel =
                         entry.sharedKoinViewModel<ShareViewModel>(navController)
                     val selectedBook by selectedBookViewModel.selectedBook.collectAsStateWithLifecycle()
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text("the selected id is $selectedBook")
+                    LaunchedEffect(selectedBook) {
+                        selectedBook?.let {
+                            viewModel.onAction(BookDetailAction.OnSelectedBookChange(it))
+                        }
                     }
+                    BookDetailScreenRoot(
+                        viewModel, onBackClick = {
+                            navController.navigateUp()
+                        }
+                    )
                 }
             }
         }

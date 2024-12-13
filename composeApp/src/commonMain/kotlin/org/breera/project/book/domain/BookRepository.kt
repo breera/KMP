@@ -8,5 +8,9 @@ interface BookRepository {
         query: String,
         searchLimit: String
     ): Result<List<Book>, DataError.Remote>
-}
 
+    suspend fun fetchDescription(
+        bookId: String
+    ): Result<String?, DataError.Remote>
+
+}
