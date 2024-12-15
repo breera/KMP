@@ -1,7 +1,8 @@
 package org.breera.project.book.presentation.book_list.composables
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,17 +30,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import composemultiplaformsample.composeapp.generated.resources.Res
 import composemultiplaformsample.composeapp.generated.resources.book_error_2
-import composemultiplaformsample.composeapp.generated.resources.eg
 import org.breera.project.book.domain.Book
 import org.breera.project.core.presentation.DarkBlue
 import org.breera.project.core.presentation.LightBlue
+import org.breera.project.core.presentation.PulseAnimation
 import org.breera.project.core.presentation.SandYellow
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.round
@@ -54,8 +57,8 @@ fun BookItem(
     Surface(
         shape = RoundedCornerShape(10.dp),
         modifier = modifier.clickable {
-                onClick.invoke()
-            },
+            onClick.invoke()
+        },
         color = LightBlue.copy(0.2f)
     ) {
         //ConstraintLayout() {
@@ -65,7 +68,7 @@ fun BookItem(
                 .padding(10.dp)
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Box(
@@ -90,9 +93,22 @@ fun BookItem(
                         imageLoadResult = Result.failure(it.result.throwable)
                     }
                 )
+
+                val painterState by painter.state.collectAsStateWithLifecycle()
+                val transition by animateFloatAsState(
+                    targetValue = if (painterState is AsyncImagePainter.State.Success) {
+                        1f
+                    } else {
+                        0f
+                    },
+                    animationSpec = tween(durationMillis = 800)
+                )
+
                 when (val result = imageLoadResult) {
                     null -> {
-                        CircularProgressIndicator()
+                        PulseAnimation(
+                            Modifier.size(40.dp)
+                        )
                     }
 
                     else -> {
@@ -104,6 +120,12 @@ fun BookItem(
                                 ratio = 0.65f,
                                 matchHeightConstraintsFirst = true
                             )
+                                .graphicsLayer {
+                                    rotationX = (1f - transition) * 30f
+                                    val scale = 0.8f + (0.2f * transition)
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
                         )
                     }
                 }

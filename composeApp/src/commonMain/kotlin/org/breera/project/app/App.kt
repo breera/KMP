@@ -1,6 +1,8 @@
 package org.breera.project.app
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,7 +63,10 @@ fun App() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = Route.BookGraph) {
             navigation<Route.BookGraph>(startDestination = Route.BookList) {
-                composable<Route.BookList> {
+                composable<Route.BookList>(
+                    exitTransition = { slideOutHorizontally() },
+                    popEnterTransition = { slideInHorizontally() }
+                ) {
                     val viewModel = koinViewModel<BookListViewModel>()
                     val shareViewModel = it.sharedKoinViewModel<ShareViewModel>(navController)
                     val selectedBookViewModel =
@@ -78,7 +83,18 @@ fun App() {
                         }
                     )
                 }
-                composable<Route.BookDetails> { entry ->
+                composable<Route.BookDetails>(
+                    enterTransition = {
+                        slideInHorizontally { initialOffset ->
+                            initialOffset
+                        }
+                    },
+                    exitTransition = {
+                        slideOutHorizontally { initialOffset ->
+                            initialOffset
+                        }
+                    }
+                ) { entry ->
                     val viewModel = koinViewModel<BookDetailViewModel>()
                     val selectedBookViewModel =
                         entry.sharedKoinViewModel<ShareViewModel>(navController)

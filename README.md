@@ -57,3 +57,7 @@ Hit API call, the only new thing is Serializable which was used to handle respon
 
 Created local database Room and saved favourite items, also check if book is saved already in 
 local db then don't call API for description.
+
+**********Seven Commit Steps**********
+
+Added Animations

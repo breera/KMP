@@ -20,8 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import org.breera.project.core.presentation.DarkBlue
+import org.breera.project.core.presentation.PulseAnimation
 import org.breera.project.core.presentation.SandYellow
 
 /**
@@ -59,16 +58,16 @@ fun BlurredImage(
     val painter = rememberAsyncImagePainter(
         model = url,
         onSuccess = {
-            imageLoadResult =
-                if (it.painter.intrinsicSize.width > 1 && it.painter.intrinsicSize.height > 1) {
-                    Result.success(it.painter)
-                } else {
-                    Result.failure(Exception("Invalid image size"))
-                }
+            val size = it.painter.intrinsicSize
+            imageLoadResult = if (size.width > 1 && size.height > 1) {
+                Result.success(it.painter)
+            } else {
+                Result.failure(Exception("Invalid image dimensions"))
+            }
         },
         onError = {
             it.result.throwable.printStackTrace()
-            imageLoadResult = Result.failure(it.result.throwable)
+            // imageLoadResult = Result.failure(it.result.throwable)
         }
     )
 
@@ -78,27 +77,19 @@ fun BlurredImage(
                 .fillMaxSize()
         ) {
             Box(Modifier.fillMaxWidth().weight(0.3f)) {
-                when (imageLoadResult) {
-                    null -> {
-                        CircularProgressIndicator()
-                    }
-
-                    else -> {
-                        Image(
-                            painter = painter,
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "",
-                            modifier = Modifier.fillMaxSize()
-                                .background(DarkBlue)
-                                .blur(20.dp)
-                        )
-                    }
-                }
+                Image(
+                    painter = painter,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "",
+                    modifier = Modifier.fillMaxSize()
+                        .background(DarkBlue)
+                        .blur(20.dp)
+                )
 
                 IconButton(
                     modifier = Modifier.padding(10.dp)
                         .statusBarsPadding()
-                        .size(40.dp) ,
+                        .size(40.dp),
                     onClick = {
                         onBackClick()
                     }
@@ -109,7 +100,7 @@ fun BlurredImage(
                         modifier = Modifier
                             .statusBarsPadding()
                             .size(AssistChipDefaults.IconSize),
-                        tint = Color.Black
+                        tint = Color.White
                     )
                 }
 
@@ -130,18 +121,20 @@ fun BlurredImage(
                 modifier = Modifier
                     .width(200.dp)
                     .aspectRatio(3 / 4f),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = Color.Transparent
-                ),
-                elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = 15.dp
-                )
+                shape = RoundedCornerShape(8.dp)
             ) {
                 AnimatedContent(targetState = imageLoadResult) {
                     when (it) {
                         null -> {
-                            CircularProgressIndicator()
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                PulseAnimation(
+                                    modifier = Modifier.size(60.dp)
+                                        .align(Alignment.Center)
+                                )
+                            }
                         }
 
                         else -> {
@@ -156,7 +149,6 @@ fun BlurredImage(
                                     contentDescription = "",
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(Color.Red)
                                 )
                                 IconButton(
                                     onClick = onFavouriteClick,
