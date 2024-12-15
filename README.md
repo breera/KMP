@@ -49,5 +49,11 @@ ViewModel, Here to paas lagge model as Nav graph is not good as large data may c
 SharedViewmodel will come only with data that is required to shared e.g. state
 
 **********Fifth Commit Steps**********
+
 Create Detail screen , following same approach of creating state, action , VM, screen etc. 
 Hit API call, the only new thing is Serializable which was used to handle responses of same key.
+
+**********Six Commit Steps**********
+
+Created local database Room and saved favourite items, also check if book is saved already in 
+local db then don't call API for description.

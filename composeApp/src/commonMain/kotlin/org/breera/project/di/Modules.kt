@@ -1,6 +1,9 @@
 package org.breera.project.di
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import org.breera.project.app.ShareViewModel
+import org.breera.project.book.data.database.DatabaseFactory
+import org.breera.project.book.data.database.FavouriteBookDatabase
 import org.breera.project.book.data.network.KtorRemoteBookDataSource
 import org.breera.project.book.data.network.RemoteBookDataSource
 import org.breera.project.book.data.repository.DefaultBookRepository
@@ -23,4 +26,12 @@ val sharedModule = module {
     viewModelOf(::BookListViewModel)
     viewModelOf(::ShareViewModel)
     viewModelOf(::BookDetailViewModel)
+    single {
+        get<DatabaseFactory>().create()
+            .setDriver(BundledSQLiteDriver())
+            .addMigrations()
+            .build()
+    }
+
+    single { get<FavouriteBookDatabase>().dao }
 }

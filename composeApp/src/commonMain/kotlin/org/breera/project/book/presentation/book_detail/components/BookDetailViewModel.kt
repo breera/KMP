@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -23,9 +25,12 @@ class BookDetailViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val bookRepository: DefaultBookRepository
 ) : ViewModel() {
+    val id = savedStateHandle.toRoute<Route.BookDetails>().bookId
+
     private val _bookDetailState = MutableStateFlow(BookDetailState())
     val bookDetailState = _bookDetailState.onStart {
         getDescription()
+        observeFavouriteStatus()
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000L),
@@ -34,7 +39,18 @@ class BookDetailViewModel(
 
     fun onAction(action: BookDetailAction) {
         when (action) {
-            BookDetailAction.OnFavouriteClick -> {}
+            BookDetailAction.OnFavouriteClick -> {
+                viewModelScope.launch {
+                    _bookDetailState.value.book?.let { book ->
+                        if (_bookDetailState.value.isFavourite) {
+                            bookRepository.deleteFromFavourite(book.id)
+                        } else {
+                            bookRepository.markAsFavourite(book)
+                        }
+                    }
+                }
+            }
+
             is BookDetailAction.OnSelectedBookChange -> {
                 _bookDetailState.update {
                     it.copy(book = action.book)
@@ -45,8 +61,16 @@ class BookDetailViewModel(
         }
     }
 
+    private fun observeFavouriteStatus() {
+        bookRepository.isBookFavourite(id)
+            .onEach { isFav ->
+                _bookDetailState.update {
+                    it.copy(isFavourite = isFav)
+                }
+            }.launchIn(viewModelScope)
+    }
+
     private fun getDescription() {
-        val id = savedStateHandle.toRoute<Route.BookDetails>().bookId
         viewModelScope.launch {
             _bookDetailState.update {
                 it.copy(isLoading = true)

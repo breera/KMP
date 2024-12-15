@@ -1,5 +1,6 @@
 package org.breera.project.book.data.network.mapper
 
+import org.breera.project.book.data.database.BookEntity
 import org.breera.project.book.data.dtos.SearchedBookDto
 import org.breera.project.book.domain.Book
 
@@ -20,5 +21,37 @@ fun SearchedBookDto.toBook(): Book {
         ratingCount = ratingsCount,
         numPages = numPagesMedian,
         numEditions = numEditions ?: 0
+    )
+}
+
+fun Book.toBookEntity(): BookEntity {
+    return BookEntity(
+        id = id,
+        title = title,
+        imageUrl = imageUrl,
+        authors = authors,
+        description = description,
+        languages = languages,
+        firstPublishYear = firstPublishYear,
+        averageRating = averageRating,
+        ratingCount = ratingCount,
+        numPages = numPages,
+        numEditions = numEditions
+    )
+}
+
+fun BookEntity.toBook(): Book {
+    return Book(
+        id = id,
+        title = title,
+        imageUrl = imageUrl,
+        authors = authors,
+        description = description,
+        languages = languages,
+        firstPublishYear = firstPublishYear,
+        averageRating = averageRating,
+        ratingCount = ratingCount,
+        numPages = numPages,
+        numEditions = numEditions
     )
 }

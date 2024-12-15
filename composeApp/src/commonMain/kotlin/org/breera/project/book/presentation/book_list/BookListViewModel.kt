@@ -28,11 +28,13 @@ import org.breera.project.core.presentation.toUiText
 class BookListViewModel(private val bookRepository: DefaultBookRepository) : ViewModel() {
     private val _state = MutableStateFlow(BookListState())
     private val cachedBooks = emptyList<Book>()
-    private val searchJob: Job? = null
+    private var searchJob: Job? = null
+    private var favouriteJob: Job? = null
     val state = _state.onStart {
         if (cachedBooks.isEmpty()) {
             observeSearchQuery()
         }
+        observeFavouriteBook()
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -56,6 +58,19 @@ class BookListViewModel(private val bookRepository: DefaultBookRepository) : Vie
         }
     }
 
+    private fun observeFavouriteBook() {
+        favouriteJob?.cancel()
+        favouriteJob = viewModelScope.launch {
+            bookRepository.getFavouriteBook()
+                .onEach { books ->
+                    _state.update {
+                        it.copy(favouriteBooks = books)
+                    }
+                }
+                .launchIn(viewModelScope)
+        }
+    }
+
     private suspend fun observeSearchQuery() {
         state.map { it.searchQuery }
             .distinctUntilChanged() // don't call api if query is same
@@ -73,7 +88,7 @@ class BookListViewModel(private val bookRepository: DefaultBookRepository) : Vie
 
                     it.length > 2 -> {
                         searchJob?.cancel()
-                        searchBooks(it)
+                        searchJob = searchBooks(it)
                     }
                 }
             }.launchIn(viewModelScope)
